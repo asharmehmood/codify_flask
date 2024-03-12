@@ -14,6 +14,9 @@
             text-align: center;
             margin: 100px auto 0
         }
+        h2 {
+            color: #008080;
+        }
         /* Additional styles for message and feedback boxes */
         .message-box {
             background-color: #f0f0f0;
@@ -202,8 +205,8 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
         }
 
-        .control-panel h3 {
-            margin-bottom: 5px;
+        .control-panel h4 {
+            margin-bottom: 15px;
             color: teal; /* Teal heading text */
         }
 
@@ -237,30 +240,47 @@
         #language:hover {
         border-color: #aaa; /* Change border color on hover */
         }
+        /* Feedback box styles */
+        #feedback-box {
+            border: 1px solid #ddd;
+            padding: 10px;
+            height: 200px; /* Adjust the height as needed */
+            overflow: auto; /* Enable both horizontal and vertical scrolling */
+            white-space: pre-wrap;
+            display: none;
+        }
+        #show-feedback {
+            overflow: auto; /* Enable both horizontal and vertical scrolling */
+            white-space: pre-wrap;
+        }
     </style>
 </head>
 
 <body>
     <div class="left-side">
-        <h2>Control Panel</h2>
-        <div class="control-panel">
-            <h3>Select your LLM</h3>
-            <input type="radio" id="llm-gemini" name="llm" value="gemini" checked>
-            <label for="llm-gemini">Gemini</label><br>
-            <input type="radio" id="llm-mistral" name="llm" value="mistral">
-            <label for="llm-mistral">Mistral</label><br>
-        </div>
-        <div class="control-panel">
-            <h3>Select Language</h3>
-            <select id="language">
-                <option value="python">Python</option>
-                <option value="javascript">JavaScript</option>
-                <option value="R">R</option>
-            </select>
-        </div>
-        <div class="control-panel">
-            <h3>Last 10 Feedbacks</h3>
-            <pre id="feedback-box"></pre>
+        <div style="margin-top:100px">
+            <h2 style="text-align: center;">Control Panel</h2>
+            <div class="control-panel">
+                <h4>Select your LLM</h4>
+                <input type="radio" id="llm-gemini" name="llm" value="gemini" checked>
+                <label for="llm-gemini">Gemini</label><br>
+                <input type="radio" id="llm-mistral" name="llm" value="mistral">
+                <label for="llm-mistral">Mistral</label><br>
+                <p style="color: teal;font-size: 14px;">Switching LLMs will clear your current history.</p>
+            </div>
+            <div class="control-panel">
+                <h4>Select Language</h4>
+                <select id="language">
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="R">R</option>
+                </select>
+            </div>
+            <div class="control-panel">
+                <h4>Last 10 Feedbacks</h4>
+                <pre id="feedback-box"></pre>
+                <button id="show-feedback">Show Feedback</button>  </div>
+            </div>
         </div>
     </div>
     <div class="right-side">
@@ -286,6 +306,9 @@
     
         <!-- Script section remains the same -->
         <script>
+            let globalApiResponse;
+            let globaluserMessageInput;
+            let last_feedbacks;
             document.addEventListener('DOMContentLoaded', function () {
                 const chatMessages = document.getElementById('chat-messages');
                 const messageForm = document.getElementById('message-form');
@@ -294,8 +317,8 @@
 
                 messageForm.addEventListener('submit', function (event) {
                     event.preventDefault();
-                    const userMessage = userMessageInput.value;
-                    
+                    userMessage = userMessageInput.value;
+                    globaluserMessageInput = userMessageInput.value;
                     // Get selected LLM and language
                     const selectedLlm = document.querySelector('input[name="llm"]:checked').value;
                     const selectedLanguage = document.getElementById('language').value;
@@ -319,7 +342,10 @@
                         .then(response => response.json())
                         .then(data => {
                             typingIndicator.style.display = 'none';
-                            const apiResponse = data.api_response;
+                            apiResponse = data.api_response;
+                            globalApiResponse = apiResponse
+                            last_feedbacks = data.last_10_feedbacks
+                            //fb_apiResponse = escapeString(apiResponse)
                             const feedbackId = `feedback-container-${Date.now()}`; // Unique ID for feedback container
                             chatMessages.innerHTML += `
                             <div class="api-response-box" style="color: #008080;">
@@ -335,7 +361,7 @@
                             <div id="${feedbackId}" class="feedback-container" style="display: none;">
                                 <input type="hidden" id="selected-emoji-${feedbackId}">
                                 <textarea id="feedback-text-${feedbackId}" placeholder="Give us your feedback"></textarea>
-                                <button class="sub_button" onclick="submitFeedback('${feedbackId}','${userMessage}','${apiResponse.replace("'", "\\'")}')">Submit</button>
+                                <button class="sub_button">Submit</button>
 
                             </div>
                         `;
@@ -355,13 +381,54 @@
                     }
                 });
             });
+            
+            function escapeString(s) {
+                var sb = [];
+                var chrs = s.split('');
+              
+                for (var i = 0; i < chrs.length; i++) {
+                  var c = chrs[i];
+              
+                  if (c === '\n') { // Use strict equality (===) for better handling
+                    // Remove line break
+                  } else if (c == '\r') {
+                    // ignore \r (already handled by removing line breaks)
+                  } else if (c == '\"') {
+                    sb.push('\\"');
+                  } else if (c == '\t') {
+                    sb.push('\\t');
+                  }else if (c == "'") {
+                    sb.push("\\'");
+                  }else if (c == "\'") {
+                    sb.push("\\'");
+                  } else {
+                    sb.push(c);
+                  }
+                }
+              
+                return sb.join('');
+              }
+            
+
             function openFeedbackTextbox(feedbackId, emoji) {
                 const selectedEmojiInput = document.getElementById(`selected-emoji-${feedbackId}`);
                 const feedbackContainer = document.getElementById(feedbackId);
         
                 selectedEmojiInput.value = emoji;
                 feedbackContainer.style.display = 'block';
+
+                const submitButtons = document.querySelectorAll('.sub_button');
+                submitButtons.forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        const feedbackContainer = button.closest('.feedback-container'); // Get the closest feedback container
+                        const feedbackId = feedbackContainer.id;
+                        const userMessage = globaluserMessageInput;
+                        const fb_apiResponse = globalApiResponse;
+                        submitFeedback(feedbackId, userMessage, fb_apiResponse);
+                    });
+                });
             }
+            
         
             function submitFeedback(feedbackId,u_msg,api_res) {
                 console.log("in submit feedback")
@@ -399,6 +466,30 @@
                     console.log('Feedback response:', data);
                 });
             }
+
+            // Function to display feedback
+            function displayFeedback(data) {
+                feedbackBox = document.getElementById('feedback-box');
+                feedbackBox.textContent = ''; // Clear existing feedback
+                console.log("---- all feedback")
+                console.log(data)
+                data.forEach(function(feedback) {
+                    feedbackBox.textContent += `----------------------------------------\n`
+                    feedbackBox.textContent += `User Message: ${feedback.user_message}\n`;
+                    feedbackBox.textContent += `LLM Response: ${feedback.llm_response}\n`;
+                    feedbackBox.textContent += `User Feedback: ${feedback.user_feedback}\n`;
+                    feedbackBox.textContent += `Feedback Text: ${feedback.feedback_text}\n`;  // Add double newline for better separation
+                    feedbackBox.textContent += `----------------------------------------\n\n`
+                });
+            }
+
+            document.getElementById('show-feedback').addEventListener('click', function() {
+                feedback_box = document.getElementById('feedback-box');
+                feedback_box.style.display = 'block'
+                // Use pre-loaded data
+                preloadedData = last_feedbacks;
+                displayFeedback(preloadedData);
+            });
         </script>
 </body>
 

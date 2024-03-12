@@ -26,12 +26,12 @@ class code_generator:
 
         self.gemini_model = ChatGoogleGenerativeAI(model="gemini-pro")
  
-    def inputs_to_llm(self,language_type):
+    def inputs_to_llm(self,):
         prompt = """
-        You are a """+language_type+""" code generator bot, queries will be related to code, kindly answer the user queries.
+        You are a code generator bot, queries will be related to code, kindly answer the user queries.
         one example is given below:
         --------- Example 1 ----------
-        user: give me code for subtracting a number from another number.
+        user: give me code for subtracting a number from another number, use python language, if i am asking you to generate code, otherwise just answer the question as best of your knowledge.
         you: Certainly! Here's a simple example of subtracting one number from another in Python:
         
         # Subtraction function
@@ -52,14 +52,14 @@ class code_generator:
         
         Note: if user ask irrelevant question (not related to code) like hi, hello, how are you, reply them gently and say 'I am codify, kindly tell me about your coding problem'
         --------- Example 2 ----------
-        user: hey, how are you
+        user: hey, how are you, use python language, if i am asking you to generate code, otherwise just answer the question as best of your knowledge
         you: hi, I'm codify. how I can assist you?
         --------- Example 2 ----------
         
         Chat History:
         {chat_history}
         
-        New query from user is given below, answer it. Format the code in """+language_type+""" with new line and tabs.
+        New query from user is given below, answer it.
         user: {user_query}
         you: 
         """
@@ -68,8 +68,8 @@ class code_generator:
         memory = ConversationBufferWindowMemory(k=5, memory_key='chat_history', input_key="user_query",return_messages=True)
         return prompt_template,memory
         
-    def code_generator_chain(self,llm_type,language_type):
-        prompt_template,memory = self.inputs_to_llm(language_type)
+    def code_generator_chain(self,llm_type):
+        prompt_template,memory = self.inputs_to_llm()
         
         use_llm = None
         if llm_type=='mistral':

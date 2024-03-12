@@ -1,0 +1,405 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <link href="https://emoji-css.afeld.me/emoji.css" rel="stylesheet">
+    <style>
+        h1 {
+            color: #008080;
+            text-align: center;
+            margin: 100px auto 0
+        }
+        /* Additional styles for message and feedback boxes */
+        .message-box {
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+        }
+
+        .api-response-box {
+            background-color: #ffffff;
+            border-radius: 5px;
+            padding: 10px;
+            margin: 10px 0;
+            position: relative;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            max-height: 300px; /* Adjust as needed */
+            overflow: auto; /* Add this line to enable scrollbar if content overflows */
+        }
+        .emojiiss{
+            font-size: 24px;
+            position: relative;
+        }
+        .feedback-options {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        /* Add these styles to your CSS */
+        .feedback-options span {
+            cursor: pointer;
+            user-select: none; /* Optional: prevent text selection on click */
+        }
+
+        .feedback-options span:hover {
+            color: #008080; /* Optional: change color on hover */
+        }
+
+        /* Add style for the chat container */
+        #chat-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* Add style for the chat messages */
+        #chat-messages {
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+        }
+
+        /* Add style for the message form */
+        #message-form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #008080;
+        }
+
+        #user-message {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #user-message::placeholder {
+            color: #ccc;
+        }
+
+        #user-message:focus {
+            outline: none;
+        }
+
+        button {
+            background-color: #ffffff;
+            color: #008080;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #f0f0f0;
+        }
+        
+        /* Add cursor style on hover */
+        .emoji:hover {
+            display: block
+            cursor: pointer;
+        }
+    
+        /* Add a style for the selected emoji */
+        .selected {
+            background-color: #ccc; /* Add your desired highlight color */
+        }
+
+        .feedback-container {
+            display: none;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 10px;
+            position: relative
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            position: relative
+        }
+        
+        .sub_button {
+            background-color: teal;
+            color: #ffffff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .sub_button:hover {
+            background-color: #008080;
+        }
+
+        /* Typing indicator styles */
+        #typing-indicator {
+            display: none;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #008080;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Style the entire page */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            min-height: 100vh; /* Set body height to 100% viewport height */
+        }
+
+        /* Style the left side (30%) */
+        .left-side {
+            flex: 0 0 30%; /* Set width to 30% */
+            background-color: #f0f0f0; /* Optional background color */
+            padding: 20px;
+        }
+
+        /* Style the right side (70%) */
+        .right-side {
+            flex: 1; /* Take up remaining space */
+            padding: 20px;
+        }
+        /* Style for the control panel sections */
+        .control-panel {
+            margin-bottom: 20px;
+            border-radius: 5px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow effect */
+        }
+
+        .control-panel h3 {
+            margin-bottom: 5px;
+            color: teal; /* Teal heading text */
+        }
+
+        /* Style for radio buttons and labels */
+        .control-panel input[type="radio"] {
+            margin-right: 5px;
+        }
+
+        .control-panel label {
+            color: #333; /* Darker text for labels */
+        }
+
+        /* Style for the select box */
+        .control-panel select {
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        /* Style the select box */
+        #language {
+        padding: 5px 10px; /* Add some padding for better readability */
+        border: 1px solid #ccc; /* Add a border */
+        border-radius: 3px; /* Add rounded corners */
+        /* Style the arrow down (focus state) */
+        background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlmZWlnPSI4IiB2aWV3Qm94PSIwIDAgOCA4Ij48cGF0aCBkPSJNMCw0LjUWMCAxLjVjMC0xLjEsMC45LTEuNSAyLTEuNXMyejYgMi02IDJWMy41bDIuNSAyLjVjMC41LjUgMC41MS44LS41IDEuM3ptMi0zLjVWMS41YzAtLjYtLjUtMS0xLjUtMUgzLjUgYy0uNSAwLTEtLjQtMS40LS45bDIuNS0yLjVjLjUtLjUgMS4xLS45IDEuNS0uOWwuNS41eiIvPjwvc3ZnPg==") no-repeat right center; /* Replace with your own arrow image if desired */
+        background-size: 12px; /* Adjust arrow size */
+        background-position: calc(100% - 10px) center; /* Position arrow */
+        }
+
+        /* Style the select box on hover */
+        #language:hover {
+        border-color: #aaa; /* Change border color on hover */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="left-side">
+        <h2>Control Panel</h2>
+        <div class="control-panel">
+            <h3>Select your LLM</h3>
+            <input type="radio" id="llm-gemini" name="llm" value="gemini" checked>
+            <label for="llm-gemini">Gemini</label><br>
+            <input type="radio" id="llm-mistral" name="llm" value="mistral">
+            <label for="llm-mistral">Mistral</label><br>
+        </div>
+        <div class="control-panel">
+            <h3>Select Language</h3>
+            <select id="language">
+                <option value="python">Python</option>
+                <option value="javascript">JavaScript</option>
+                <option value="R">R</option>
+            </select>
+        </div>
+        <div class="control-panel">
+            <h3>Last 10 Feedbacks</h3>
+            <pre id="feedback-box"></pre>
+        </div>
+    </div>
+    <div class="right-side">
+        <h1>Codify - Your Coding Assistant</h1>
+
+        <!-- Chat container -->
+        <div id="chat-container">
+            <!-- Chat messages -->
+            <div id="chat-messages"></div>
+            
+            <!-- Typing indicator -->
+            <div id="typing-indicator" style="display: none;">
+                <div class="spinner"></div>
+                <span style="color:teal;">Codify Typing...</span>
+            </div>
+            <!-- Message form -->
+            <form id="message-form">
+                <input type="text" id="user-message" placeholder="Type your message...">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+    
+        <!-- Script section remains the same -->
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const chatMessages = document.getElementById('chat-messages');
+                const messageForm = document.getElementById('message-form');
+                const userMessageInput = document.getElementById('user-message');
+                const typingIndicator = document.getElementById('typing-indicator');
+
+                messageForm.addEventListener('submit', function (event) {
+                    event.preventDefault();
+                    const userMessage = userMessageInput.value;
+                    
+                    // Get selected LLM and language
+                    const selectedLlm = document.querySelector('input[name="llm"]:checked').value;
+                    const selectedLanguage = document.getElementById('language').value;
+
+                    // Display typing indicator
+                    typingIndicator.style.display = 'flex';
+
+                    // Display user message
+                    chatMessages.innerHTML += `<div class="message-box" style="color: #008080;">👤 ${userMessage}</div>`;
+        
+                    // Simulate API call and display API response
+                    fetch('/send_message', {
+                            method: 'POST',
+                            body: new URLSearchParams({ 'user_message': userMessage,
+                            'llm': selectedLlm,
+                            'language': selectedLanguage }),
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            typingIndicator.style.display = 'none';
+                            const apiResponse = data.api_response;
+                            const feedbackId = `feedback-container-${Date.now()}`; // Unique ID for feedback container
+                            chatMessages.innerHTML += `
+                            <div class="api-response-box" style="color: #008080;">
+                                🤖 <pre><code class="python">${apiResponse}</code></pre>
+                            </div>
+                            <div class="emojiiss">
+                                <div class="feedback-options" id="feedback-options-${feedbackId}">
+                                    <span class="emoji" onclick="openFeedbackTextbox('${feedbackId}', 'good')">👍🏾</span>
+                                    <span class="emoji" onclick="openFeedbackTextbox('${feedbackId}', 'bad')">👎🏾</span>
+                                </div>
+                            </div>
+                            
+                            <div id="${feedbackId}" class="feedback-container" style="display: none;">
+                                <input type="hidden" id="selected-emoji-${feedbackId}">
+                                <textarea id="feedback-text-${feedbackId}" placeholder="Give us your feedback"></textarea>
+                                <button class="sub_button" onclick="submitFeedback('${feedbackId}','${userMessage}','${apiResponse.replace("'", "\\'")}')">Submit</button>
+
+                            </div>
+                        `;
+                            hljs.highlightAll(); // Highlight the code
+                        });
+                        
+                    // Hide typing indicator after response
+                    
+                    // Clear input field
+                    userMessageInput.value = '';
+        
+                    // Show or hide feedback options based on input value
+                    if (userMessage.trim() !== '') {
+                        feedbackOptions.style.display = 'block';
+                    } else {
+                        feedbackOptions.style.display = 'none';
+                    }
+                });
+            });
+            function openFeedbackTextbox(feedbackId, emoji) {
+                const selectedEmojiInput = document.getElementById(`selected-emoji-${feedbackId}`);
+                const feedbackContainer = document.getElementById(feedbackId);
+        
+                selectedEmojiInput.value = emoji;
+                feedbackContainer.style.display = 'block';
+            }
+        
+            function submitFeedback(feedbackId,u_msg,api_res) {
+                console.log("in submit feedback")
+                const feedbackText = document.getElementById(`feedback-text-${feedbackId}`).value;
+                const selectedEmojiInput = document.getElementById(`selected-emoji-${feedbackId}`);
+        
+                if (selectedEmojiInput) {
+                    const selectedEmoji = selectedEmojiInput.value;
+                    console.log(`Feedback for ${selectedEmoji}: ${feedbackText}`);
+        
+                    // Hide the feedback text box after submission
+                    const feedbackContainer = document.getElementById(feedbackId);
+                    feedbackContainer.style.display = 'none';
+                    const feedbackEmojiContainer = document.getElementById(`feedback-options-${feedbackId}`)
+                    feedbackEmojiContainer.style.display = 'none'
+
+                    // Call the send_feedback API
+                    console.log("calling send feedback api")
+                    sendFeedbackAPI(selectedEmoji,feedbackText,u_msg,api_res);
+                }
+            }
+
+            function sendFeedbackAPI(selectedemoji,feedbackText,u_msg,api_res) {
+                // Call the /send_feedback API
+                console.log("going to call")
+                fetch('/send_feedback', {
+                    method: 'POST',
+                    body: new URLSearchParams({ 'feedback':selectedemoji,'feedback_text': feedbackText,'user_message':u_msg,'api_response':api_res}),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Feedback response:', data);
+                });
+            }
+        </script>
+</body>
+
+</html>

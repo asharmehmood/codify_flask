@@ -1,0 +1,261 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codify</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #008080;
+            text-align: center;
+            margin: 100px auto 0
+        }
+
+        #chat-container {
+            max-width: 1000px;
+            margin: 30px auto 0;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #chat-messages {
+            padding: 20px;
+            height: 500px;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+        }
+
+        #message-form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #008080;
+        }
+
+        #user-message {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #user-message::placeholder {
+            color: #ccc;
+        }
+
+        #user-message:focus {
+            outline: none;
+        }
+
+        button {
+            background-color: #ffffff;
+            color: #008080;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Codify - Your Coding Assistant</h1>
+
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <form id="message-form">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/highlight.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageForm = document.getElementById('message-form');
+            const userMessageInput = document.getElementById('user-message');
+
+            messageForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const userMessage = userMessageInput.value;
+
+                // Display user message
+                chatMessages.innerHTML += `<div style="color: #008080;">User: ${userMessage}</div>`;
+
+                // Simulate API call and display API response
+                fetch('/send_message', {
+                        method: 'POST',
+                        body: new URLSearchParams({ 'user_message': userMessage }),
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        const apiResponse = data.api_response;
+                        chatMessages.innerHTML += `<div style="color: #008080;">API: <pre><code class="python">${apiResponse}</code></pre></div>`;
+                        hljs.highlightAll(); // Highlight the code
+                    });
+
+                // Clear input field
+                userMessageInput.value = '';
+            });
+        });
+    </script>
+</body>
+
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codify</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #008080; /* Teal color */
+            text-align: center;
+            margin:100px auto 0
+        }
+
+        #chat-container {
+            max-width: 1000px;
+            margin: 30px auto 0;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #chat-messages {
+            padding: 20px;
+            height: 500px; /* Adjust as needed */
+            overflow-y: auto;
+            background-color: #f0f0f0;
+        }
+
+        #message-form {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #008080; /* Teal color */
+        }
+
+        #user-message {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        #user-message::placeholder {
+            color: #ccc; /* Light grey color */
+        }
+
+        #user-message:focus {
+            outline: none;
+        }
+
+        button {
+            background-color: #ffffff;
+            color: #008080; /* Teal color */
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Codify -  Your Coding Assistant</h1>
+    
+    <div id="chat-container">
+        <div id="chat-messages"></div>
+        <form id="message-form">
+            <input type="text" id="user-message" placeholder="Type your message...">
+            <button type="submit">Send</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatMessages = document.getElementById('chat-messages');
+            const messageForm = document.getElementById('message-form');
+            const userMessageInput = document.getElementById('user-message');
+
+            messageForm.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const userMessage = userMessageInput.value;
+                
+                // Display user message
+                chatMessages.innerHTML += `<div style="color: #008080;">User: ${userMessage}</div>`;
+                
+                // Simulate API call and display API response
+                fetch('/send_message', {
+                    method: 'POST',
+                    body: new URLSearchParams({ 'user_message': userMessage }),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const apiResponse = data.api_response;
+                    chatMessages.innerHTML += `<div style="color: #008080;">API: ${apiResponse}</div>`;
+                });
+
+                // Clear input field
+                userMessageInput.value = '';
+            });
+        });
+    </script>
+</body>
+</html>
+ -->
+
+
+ `
+                                <div class="api-response-box" style="color: #008080;">
+                                    API: <pre><code class="python">${apiResponse}</code></pre>
+                                    <div class="feedback-options">
+                                        <span class="emoji" onclick="sendFeedback('😍')">😍</span>
+                                        <span class="emoji" onclick="sendFeedback('😊')">😊</span>
+                                        <span class="emoji" onclick="sendFeedback('🤔')">🤔</span>
+                                        <span class="emoji" onclick="sendFeedback('😕')">😕</span>
+                                        <span class="emoji" onclick="sendFeedback('😡')">😡</span>
+                                    </div>
+                                </div>
+                                `

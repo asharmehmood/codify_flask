@@ -1,0 +1,98 @@
+[
+    {
+        "user_message": "",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": ""
+    },
+    {
+        "user_message": "",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "what was it"
+    },
+    {
+        "user_message": "",
+        "llm_response": "",
+        "user_feedback": "bad",
+        "feedback_text": "laldjflaksd"
+    },
+    {
+        "user_message": "hey",
+        "llm_response": "",
+        "user_feedback": "bad",
+        "feedback_text": "bery bad"
+    },
+    {
+        "user_message": "hey",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "kjk"
+    },
+    {
+        "user_message": "hkjh",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "yhk"
+    },
+    {
+        "user_message": "give me some code",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "waha"
+    },
+    {
+        "user_message": "",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "sfa"
+    },
+    {
+        "user_message": "",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "what"
+    },
+    {
+        "user_message": "",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "good"
+    },
+    {
+        "user_message": "hi",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "jkl o"
+    },
+    {
+        "user_message": "hello",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "good response"
+    },
+    {
+        "user_message": "hey",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "afsd"
+    },
+    {
+        "user_message": "hey",
+        "llm_response": "",
+        "user_feedback": "good",
+        "feedback_text": "hey"
+    },
+    {
+        "user_message": "hey",
+        "llm_response": "Hi, I'm codify. How I can assist you?",
+        "user_feedback": "good",
+        "feedback_text": "what"
+    },
+    {
+        "user_message": "hi",
+        "llm_response": "hi, I'm codify. how I can assist you?",
+        "user_feedback": "good",
+        "feedback_text": "good"
+    }
+]

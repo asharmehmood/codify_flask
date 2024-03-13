@@ -9,6 +9,21 @@ Welcome to Codify, your one-stop shop for generating code snippets and tackling 
 * **Real-Time Code Generation:** Frame your coding questions thoughtfully, and Codify's AI model will interpret them and generate relevant code examples in real-time.
 * **Feedback System:** Help shape Codify's evolution by providing feedback on the generated responses. This feedback directly contributes to improving the application's accuracy and effectiveness. The control panel displays the last 10 feedback entries for your reference.
 
+## Local Setup
+Clone the repository
+```Terminal
+git clone https://github.com/asharmehmood/codify_flask.git
+cd codify
+```
+Install the requirements.txt file. (Python=3.10)
+```Terminal
+pip install -r requirements.txt
+```
+Run the app
+```Terminal
+python app.py
+```
+
 ## How to Use
 
 **1. Select Your Language and LLM:**
@@ -44,3 +59,6 @@ Your feedback is vital for Codify's continuous improvement. If you encounter any
 We also welcome contributions to Codify's development. Feel free to submit pull requests or report issues on the GitHub repository (link to be added when available).
 
 We appreciate your interest in Codify!
+
+
+

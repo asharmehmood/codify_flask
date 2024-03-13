@@ -24,6 +24,17 @@ Run the app
 python app.py
 ```
 
+## Docker Setup
+Build the docker image
+```Terminal
+cd codify
+sudo docker build -t codify_flask .
+```
+Run docker container
+```Terminal
+sudo docker run codify_flask
+```
+
 ## How to Use
 
 **1. Select Your Language and LLM:**
@@ -45,12 +56,6 @@ python app.py
 **5. View Last 10 Feedbacks:**
 
 - Click the "Show Feedback" button to view the last 10 feedback entries. This can offer valuable insights into how others interact with Codify.
-
-## Video Demo
-
-**[Video Demo](PLACEHOLDER_FOR_VIDEO_URL)**
-
-* Placeholder for video thumbnail
 
 ## Feedback and Contributions
 

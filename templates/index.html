@@ -8,6 +8,7 @@
     <title>Codify</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.7.2/styles/default.min.css">
     <link href="https://emoji-css.afeld.me/emoji.css" rel="stylesheet">
+    
     <style>
         h1 {
             color: #008080;
@@ -253,6 +254,46 @@
             overflow: auto; /* Enable both horizontal and vertical scrolling */
             white-space: pre-wrap;
         }
+        .delete-response {
+            background-color: #008080; /* Red color for the button */
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right; /* Position the button to the right */
+          }
+          
+          .delete-response:hover {
+            background-color: #588a8a; /* Darker red on hover */
+          }
+          .run-code {
+            background-color: #008080; /* Red color for the button */
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: left; /* Position the button to the right */
+          }
+          
+          .run-code:hover {
+            background-color: #588a8a; /* Darker red on hover */
+          }
+          .code-output {
+            background-color: #588a8a; /* Red color for the button */
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: left; /* Position the button to the right */
+          }
+          
+          .code-output:hover {
+            background-color: #588a8a; /* Darker red on hover */
+          }
+          
     </style>
 </head>
 
@@ -309,6 +350,7 @@
             let globalApiResponse;
             let globaluserMessageInput;
             let last_feedbacks;
+            let prev_feedbackId = ""
             document.addEventListener('DOMContentLoaded', function () {
                 const chatMessages = document.getElementById('chat-messages');
                 const messageForm = document.getElementById('message-form');
@@ -341,17 +383,27 @@
                         })
                         .then(response => response.json())
                         .then(data => {
+                            if (prev_feedbackId !== "") {
+                                var emojibox = document.getElementById("emoji-" + prev_feedbackId);
+                                if (emojibox) {
+                                  emojibox.style.display = "none";
+                                }
+                              }
                             typingIndicator.style.display = 'none';
                             apiResponse = data.api_response;
                             globalApiResponse = apiResponse
                             last_feedbacks = data.last_10_feedbacks
                             //fb_apiResponse = escapeString(apiResponse)
                             const feedbackId = `feedback-container-${Date.now()}`; // Unique ID for feedback container
+                            prev_feedbackId = feedbackId
                             chatMessages.innerHTML += `
-                            <div class="api-response-box" style="color: #008080;">
+                            <div class="api-response-box" id="api-response-box-${feedbackId}" style="color: #008080;">
                                 🤖 <pre><code class="python">${apiResponse}</code></pre>
+                                <button class="delete-response">Delete</button>
+                                <button class="run-code">Run</button>
+                                <button class="code-output" id="code-output-${feedbackId}" style="display:none;">Code Output</button>
                             </div>
-                            <div class="emojiiss">
+                            <div class="emojiiss" id="emoji-${feedbackId}">
                                 <div class="feedback-options" id="feedback-options-${feedbackId}">
                                     <span class="emoji" onclick="openFeedbackTextbox('${feedbackId}', 'good')">👍🏾</span>
                                     <span class="emoji" onclick="openFeedbackTextbox('${feedbackId}', 'bad')">👎🏾</span>
@@ -490,6 +542,48 @@
                 preloadedData = last_feedbacks;
                 displayFeedback(preloadedData);
             });
+
+            const chatMessages = document.getElementById('chat-messages');
+
+            chatMessages.addEventListener('click', (event) => {
+            if (event.target.classList.contains('run-code')){
+                const responseBoxId = event.target.closest('.api-response-box').id;
+                const codeBox = document.getElementById(responseBoxId);
+                codeOutput = codeBox.querySelector('.code-output');
+                code = codeBox.textContent;
+
+                fetch('/run_code', {
+                    method: 'POST',
+                    body: new URLSearchParams({ 'this_code':code}),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Feedback response:', data);
+                    const output = data.output; // Assuming the output is in the 'output' key of the response data
+                    codeOutput.style.display = 'block'
+                    codeOutput.textContent = output; // Update the code content with the output
+                });
+                
+            }
+            // Check if the clicked element has the class `delete-response`
+            if (event.target.classList.contains('delete-response')) {
+                const responseBox = event.target.closest('.api-response-box'); // Get the closest response box
+                const feedbackContainerId = responseBox.nextElementSibling.id; // Get ID of the next sibling (feedback container)
+
+                responseBox.parentNode.removeChild(responseBox); // Remove the response box
+
+                // Hide the corresponding feedback options container based on ID
+                const feedbackContainer = document.getElementById(feedbackContainerId);
+                if (feedbackContainer) { // Check if the element exists before hiding
+                feedbackContainer.style.display = 'none';
+                }
+            }
+            });
+
+
         </script>
 </body>
 

@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, jsonify
 from codify import code_generator
 from helpers import Helpers
 import json
+import re
 
 codgen = code_generator()
 help_me = Helpers()
@@ -52,6 +53,33 @@ def send_feedback():
     saved = help_me.save_feedback_object(user_message,api_response,feedback,feedback_text)
     
     return jsonify({'status': 'Feedback received', 'feedback_saved':saved})
+
+
+@app.route('/run_code', methods=['POST'])
+def run_code():
+    print("run code called")
+    code = request.form.get('this_code')
+    output = {}
+    try:
+        code_blocks = re.findall(r'`python[\s\S]+?`', code, flags=re.DOTALL)
+        if len(code_blocks)>0:
+            code_block = code_blocks[0]  # Extract first match
+        else:
+            code_blocks = re.findall(r'`[\s\S]+?`',code, flags=re.DOTALL)
+            if len(code_blocks)>0:
+                code_block=code_blocks[0]
+            else:
+                return jsonify({'status': 'Data received','output':'Oops! Code not found.'})
+        code_block = code_block.replace('python','').replace('`','')
+        # Create a dictionary to store local variables
+        local_vars = {}
+
+        # Execute the code string with locals() dictionary
+        exec(code_block, globals(), local_vars)
+
+        return jsonify({'status': 'Data received','output':"Executed successfully!"})
+    except Exception as e:
+        return jsonify({'status': 'Data received','output': str(e)})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000,debug=True)

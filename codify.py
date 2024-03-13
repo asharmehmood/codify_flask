@@ -63,8 +63,8 @@ class code_generator:
             return result
 
         # Example usage
-        number1 = float(input("Enter the first number: "))
-        number2 = float(input("Enter the second number: "))
+        number1 = float(5)
+        number2 = float(4)
 
         result = subtract_numbers(number1, number2)
 
@@ -82,7 +82,7 @@ class code_generator:
         Chat History:
         {chat_history}
         
-        New query from user is given below, answer it.
+        New query from user is given below, answer it. Always use example value instead of taking input from user.
         user: {user_query}
         you: 
         """

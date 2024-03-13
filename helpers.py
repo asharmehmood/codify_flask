@@ -5,7 +5,7 @@ class Helpers():
         pass
     
     def save_feedback_object(self, user_message, api_response, feedback, feedback_text):
-        print("Making feedback object")
+        # print("Making feedback object")
         feedback_obj ={
             "user_message":user_message,
             "llm_response":api_response,
@@ -18,7 +18,7 @@ class Helpers():
         return saved
     
     def save_data_to_json(self,data):
-        print("in saving feedback")
+        # print("in saving feedback")
         filename = "codify_feedback.json"
         try:
             # Load existing data from the file

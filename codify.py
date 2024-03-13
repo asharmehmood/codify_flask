@@ -66,13 +66,14 @@ class code_generator:
         prompt_template = PromptTemplate(input_variables=["chat_history","user_query"], template=prompt)
         # memory = ConversationBufferMemory(input_key='user_query', memory_key='chat_history')
         memory = ConversationBufferWindowMemory(k=5, memory_key='chat_history', input_key="user_query",return_messages=True)
+        
         return prompt_template,memory
         
     def code_generator_chain(self,llm_type):
         prompt_template,memory = self.inputs_to_llm()
         
         use_llm = None
-        if llm_type=='mistral':
+        if llm_type == 'mistral':
             use_llm = self.mistral_hf
         else:
             use_llm = self.gemini_model
@@ -82,7 +83,7 @@ class code_generator:
         return codegen_chain
     
 
-            #       let's say user ask to change something in code:
+        #       let's say user ask to change something in code:
         # --------- Example 2 ----------
         # user: use meaninful variable name in code
         # you: Certainly! Meaningful variable names enhance code readability. Here's the code with more descriptive variable names:
